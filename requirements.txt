@@ -3,5 +3,6 @@ websockets
 fastapi_sqlalchemy
 pydantic
 pydantic-settings
-psycopg2
+psycopg2-binary 
 pyTelegramBotAPI
+sqlalchemy 
