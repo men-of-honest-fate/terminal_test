@@ -1,0 +1,7 @@
+fastapi
+websockets
+fastapi_sqlalchemy
+pydantic
+pydantic-settings
+psycopg2
+pyTelegramBotAPI
