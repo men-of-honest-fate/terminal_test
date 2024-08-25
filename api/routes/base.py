@@ -36,3 +36,9 @@ app.add_middleware(
 
 app.include_router(root, prefix="", tags=["root"])
 app.include_router(ws, prefix="/ws", tags=["Websockets"])
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
