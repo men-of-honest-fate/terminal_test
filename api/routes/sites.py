@@ -7,25 +7,9 @@ from sqlalchemy.orm import sessionmaker
 from models.db import Site
 import models
 from models.crud import create_site, create_terminal, get_site, get_terminal
-# SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
-SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
-
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-
-models.Base.metadata.create_all(bind=engine)
+from base import get_db 
 
 app = FastAPI()
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 
 @app.post("/create_site/", response_model=Create_Site)
 def create_site1(site: Create_Site, db: Session = Depends(get_db)):

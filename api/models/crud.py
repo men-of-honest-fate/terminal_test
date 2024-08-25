@@ -43,6 +43,6 @@ def create_terminal(db: Session, terminal: Create_Terminal):
 def get_site(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Site).offset(skip).limit(limit).all()
 #в ручке гет превратить в модели пайдантик уже в самой ручке 
-def get_(db: Session, skip: int = 0, limit: int = 100):
+def get_terminal(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Terminal).offset(skip).limit(limit).all()
 #в ручке гет превратить в модели пайдантик уже в самой ручке 
