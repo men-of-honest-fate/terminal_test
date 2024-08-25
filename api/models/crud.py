@@ -46,3 +46,11 @@ def get_site(db: Session, skip: int = 0, limit: int = 100):
 def get_terminal(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Terminal).offset(skip).limit(limit).all()
 #в ручке гет превратить в модели пайдантик уже в самой ручке 
+def delete_site(db: Session, get_id: int):
+    obj = db.query(Site).filter(Site.id ==get_id).one_or_none()
+    if obj:
+        db.delete(obj)
+def delete_terminal(db: Session, get_id: int):
+    obj = db.query(Terminal).filter(Terminal.id ==get_id).one_or_none()
+    if obj:
+        db.delete(obj)
