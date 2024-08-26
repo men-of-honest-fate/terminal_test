@@ -3,14 +3,17 @@ from telebot.handler_backends import State, StatesGroup
 from telebot.storage import StateMemoryStorage
 from settings import get_settings
 import requests
-
+import hashlib
 class MyStates(StatesGroup):
     wait_for_button = State()
     wait_for_summ = State()
-
+    wait_for_login = State()
+    wait_for_password = State()
 
 class Bot:
     def __init__(self):
+        self.login_hash: str
+        self.password_hash: str
         self.state_storage = StateMemoryStorage()
         self.token = get_settings().BOT_TOKEN
         self.bot = TeleBot(self.token, state_storage=self.state_storage)
@@ -28,7 +31,31 @@ class Bot:
                 '''Я - телеграм бот, помощник для автоматизации работы терминалов.\nДля начала работы нажмите на кнопку "Оплатить"''',
                 reply_markup=self.markup,
             )
+        @self.bot.message_handlers(commands = ["authorize"])
+        def authorisation_start(message):
+            if message.text == "Авторизоваться":
+                self.bot.send_message(
+                    message.chat.id, "Введите логин", reply_markup=self.markup
+                )
+                self.bot.set_state(message.from_user.id, MyStates.wait_for_login, message.chat.id)
 
+        @self.bot.message_handler(state=MyStates.wait_for_login)
+        def login_hashing(message):
+                self.login_hash = hashlib.sha512(message.encode()).hexdigest()
+                self.bot.send_message(message.chat.id, "Логин принят", reply_markup=self.markup)
+                self.bot.set_state(message.from_user.id, MyStates.wait_for_password, message.chat.id)
+                self.bot.send_message(
+                message.chat.id, "Введите пароль", reply_markup=self.markup)
+        @self.bot.message_handler(state = MyStates.wait_for_password)
+        def password_hashing(message):
+            self.password_hash = hashlib.sha512(message.encode()).hexdigest()
+            self.bot.send_message(message.chat.id, "Пароль принят", reply_markup=self.markup)
+            self.bot.set_state(message.from_user.id, message.chat.id)
+            response = requests.post(f"{self.api_url}/authorize", data = {"input_login":self.login_hash, "input_password":self.password_hash})
+            if response.status_code == 200:
+                self.bot.send_message(message.chat.id, "Данные приняты", reply_markup=self.markup)
+            else: 
+                self.bot.send_message(message.chat.id, "Вы незарегестрированы", reply_markup=self.markup)
         @self.bot.message_handler(state=MyStates.wait_for_button)
         def button_message(message):
             if message.text == "Оплатить":

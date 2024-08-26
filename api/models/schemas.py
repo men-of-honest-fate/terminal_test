@@ -27,16 +27,9 @@ class Get_Terminal(BaseModel):
 class Update_Terminal(BaseModel):
     limit_sum: int
     limit_req: int 
-class Authorize_Password(BaseModel):
-    url: str
+class Authorize_Data(BaseModel):
     password: str
     login: str
-    token_password:str
-class Authorize_Login(BaseModel):
-     url: str
-     password: str
-     login: str
-     token_password:str
 
 
 # _tablename__ = "site"

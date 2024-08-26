@@ -1,12 +1,12 @@
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
-from api.models.schemas import Create_Site, Create_Terminal, Get_Site, Get_Terminal, Update_Site, Update_Terminal
+from api.models.schemas import Create_Site, Create_Terminal, Get_Site, Get_Terminal, Update_Site, Update_Terminal, Authorize_Data
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from models.db import Site
 import models
-from models.crud import create_site, create_terminal, get_site, get_terminal, delete_site
+from models.crud import create_site, create_terminal, get_site, get_terminal, delete_site, authorization
 from base import get_db 
 app = FastAPI()
 
@@ -34,4 +34,6 @@ def delete_site1(get_id: int, db: Session = Depends(get_db)):
 @app.post("/delete_terminal", response_model = None)
 def delete_terminal1(get_id: int, db: Session = Depends(get_db)):
     delete_site(db, get_id=get_id)
-
+@app.post("/authorize", response_model = Authorize_Data)
+def authorize1(input_login: str, input_password:str, db:Session = Depends(get_db)):
+    authorization(db, input_login = input_login, input_password = input_password)
