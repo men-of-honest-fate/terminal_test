@@ -26,3 +26,8 @@ class Terminal(Base):
     id: Mapped[int] = mapped_column(primary_key = True)
     limit_sum: Mapped[int] = mapped_column(nullable = False)
     limit_req: Mapped[int] = mapped_column(nullable = False)
+class Authorize_Data(Base):
+    __tablename__ = "authorization_data"
+    id: int
+    login: str
+    password: str

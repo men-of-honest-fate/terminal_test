@@ -34,3 +34,4 @@ def delete_site1(get_id: int, db: Session = Depends(get_db)):
 @app.post("/delete_terminal", response_model = None)
 def delete_terminal1(get_id: int, db: Session = Depends(get_db)):
     delete_site(db, get_id=get_id)
+

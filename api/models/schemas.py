@@ -27,6 +27,18 @@ class Get_Terminal(BaseModel):
 class Update_Terminal(BaseModel):
     limit_sum: int
     limit_req: int 
+class Authorize_Password(BaseModel):
+    url: str
+    password: str
+    login: str
+    token_password:str
+class Authorize_Login(BaseModel):
+     url: str
+     password: str
+     login: str
+     token_password:str
+
+
 # _tablename__ = "site"
 #     id: Mapped[int] = mapped_column(primary_key = True)
 #     url: Mapped[str] = mapped_column(nullable = False)
