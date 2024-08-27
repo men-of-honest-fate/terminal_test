@@ -37,3 +37,4 @@ def delete_terminal1(get_id: int, db: Session = Depends(get_db)):
 @app.post("/authorize", response_model = Authorize_Data)
 def authorize1(input_login: str, input_password:str, db:Session = Depends(get_db)):
     authorization(db, input_login = input_login, input_password = input_password)
+    return(Authorize_Data.token)

@@ -30,7 +30,7 @@ class Update_Terminal(BaseModel):
 class Authorize_Data(BaseModel):
     password: str
     login: str
-
+    token: str
 
 # _tablename__ = "site"
 #     id: Mapped[int] = mapped_column(primary_key = True)

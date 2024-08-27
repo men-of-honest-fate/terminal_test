@@ -9,7 +9,8 @@ class MyStates(StatesGroup):
     wait_for_summ = State()
     wait_for_login = State()
     wait_for_password = State()
-
+    wait_for_changing = State()
+    wait_for_changing_login_or_password = State()
 class Bot:
     def __init__(self):
         self.login_hash: str
@@ -29,7 +30,7 @@ class Bot:
             self.bot.send_message(
                 message.chat.id,
                 '''Я - телеграм бот, помощник для автоматизации работы терминалов.\nДля начала работы нажмите на кнопку "Оплатить"''',
-                reply_markup=self.markup,
+                reply_markup=self.markup, # дописать пользователю ручку для апдейта пароля или логина
             )
         @self.bot.message_handlers(commands = ["authorize"])
         def authorisation_start(message):
@@ -50,12 +51,22 @@ class Bot:
         def password_hashing(message):
             self.password_hash = hashlib.sha512(message.encode()).hexdigest()
             self.bot.send_message(message.chat.id, "Пароль принят", reply_markup=self.markup)
-            self.bot.set_state(message.from_user.id, message.chat.id)
             response = requests.post(f"{self.api_url}/authorize", data = {"input_login":self.login_hash, "input_password":self.password_hash})
             if response.status_code == 200:
-                self.bot.send_message(message.chat.id, "Данные приняты", reply_markup=self.markup)
+                self.bot.send_message(message.chat.id, f"Данные приняты, Ваш токен сессии {response.request}", reply_markup=self.markup)
             else: 
-                self.bot.send_message(message.chat.id, "Вы незарегестрированы", reply_markup=self.markup)
+                   self.bot.send_message(message.chat.id, "Вы незарегестрированы", reply_markup=self.markup)
+            self.bot.set_state(message.from_user.id, MyStates.wait_for_changing, message.chat.id)
+        @self.bot.message_handler(state = MyStates.wait_for_changing)
+        def changing_data(message):
+            self.bot.send_message(message.chat.id, "Хотите сменить логин или пароль?", reply_markup=self.markup)
+            self.bot.send_message(message.chat.id, "Тогда введите токен одной из прошлых сессий", reply_markup=self.markup)
+            response = requests.post(f"{self.api_url}/check_token", data = {"token":message})
+            if response.status_code ==200:
+                self.bot.set_state(message.chat.id, MyStates.wait_for_changing_login_or_password, message.chat.id)
+            else: 
+                self.bot.send_message(message.chat.id, "Ваш токен неверен", message.chat.id)
+        @self.bot.message_handler(state = MyStates.wait_for_changing_login_or_password)
         @self.bot.message_handler(state=MyStates.wait_for_button)
         def button_message(message):
             if message.text == "Оплатить":

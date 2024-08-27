@@ -33,3 +33,7 @@ class Data_Authorize(Base):
     password: Mapped[str] = mapped_column(nullable = False)
     url: Mapped[str] = mapped_column(nullable = False)
     token: Mapped[str] = mapped_column()
+class Old_Tokens(Base):
+    __tablename__ = "old_tokens"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    login: Mapped[str] = 

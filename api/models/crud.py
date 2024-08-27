@@ -39,8 +39,7 @@ def create_terminal(db: Session, terminal: Create_Terminal):
     db.commit()
     db.refresh(db_terminal)
     return db_terminal
-def update_site(db: Session, site: Create_Site):
-
+def update_site(db: Session, site: Create_Site, ):
 
 def get_site(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Site).offset(skip).limit(limit).all()
