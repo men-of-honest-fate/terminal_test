@@ -62,6 +62,6 @@ def authorization(db: Session, input_login: str, input_password: str, authorize:
         user.token = new_token
         db.commit()
         return new_token
-        
+def 
         #тогда дать возможность создавать сайты я хз тут я запуталась
 
