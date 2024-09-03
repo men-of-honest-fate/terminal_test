@@ -1,8 +1,8 @@
-"""database
+"""init
 
-Revision ID: 1b78c1f78859
+Revision ID: a36d02e081c1
 Revises: 
-Create Date: 2024-08-24 22:38:54.783811
+Create Date: 2024-09-02 16:12:05.863328
 
 """
 
@@ -12,7 +12,7 @@ import os
 
 
 # revision identifiers, used by Alembic.
-revision = "1b78c1f78859"
+revision = "a36d02e081c1"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -28,7 +28,13 @@ def upgrade():
         sa.Column("bank_number", sa.String(), nullable=False),
         sa.Column("login", sa.String(), nullable=False),
         sa.Column("password", sa.String(), nullable=False),
+        sa.Column("token", sa.String(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("bank_number"),
+        sa.UniqueConstraint("login"),
+        sa.UniqueConstraint("password"),
+        sa.UniqueConstraint("token"),
+        sa.UniqueConstraint("url"),
         schema="MODELS_DB",
     )
     op.create_table(
@@ -67,7 +73,7 @@ def upgrade():
     op.grant_on_table(
         "test_db_read" if os.getenv("ENVIRONMENT") != "production" else "prod_db_read",
         ["SELECT"],
-        '"MODELS_DB".terminal',
+        '"MODELS_DB".site',
     )
     op.grant_on_table(
         (
@@ -76,17 +82,17 @@ def upgrade():
             else "prod_db_write"
         ),
         ["SELECT", "UPDATE", "DELETE", "TRUNCATE", "INSERT"],
-        '"MODELS_DB".terminal',
+        '"MODELS_DB".site',
     )
     op.grant_on_table(
         "test_db_all" if os.getenv("ENVIRONMENT") != "production" else "prod_db_all",
         ["ALL"],
-        '"MODELS_DB".terminal',
+        '"MODELS_DB".site',
     )
     op.grant_on_table(
         "test_db_read" if os.getenv("ENVIRONMENT") != "production" else "prod_db_read",
         ["SELECT"],
-        '"MODELS_DB".site',
+        '"MODELS_DB".terminal',
     )
     op.grant_on_table(
         (
@@ -95,12 +101,12 @@ def upgrade():
             else "prod_db_write"
         ),
         ["SELECT", "UPDATE", "DELETE", "TRUNCATE", "INSERT"],
-        '"MODELS_DB".site',
+        '"MODELS_DB".terminal',
     )
     op.grant_on_table(
         "test_db_all" if os.getenv("ENVIRONMENT") != "production" else "prod_db_all",
         ["ALL"],
-        '"MODELS_DB".site',
+        '"MODELS_DB".terminal',
     )
     op.grant_on_table(
         "test_db_read" if os.getenv("ENVIRONMENT") != "production" else "prod_db_read",
@@ -186,7 +192,7 @@ def downgrade():
     op.revoke_on_table(
         "test_db_all" if os.getenv("ENVIRONMENT") != "production" else "prod_db_all",
         ["ALL"],
-        '"MODELS_DB".site',
+        '"MODELS_DB".terminal',
     )
     op.revoke_on_table(
         (
@@ -195,17 +201,17 @@ def downgrade():
             else "prod_db_write"
         ),
         ["SELECT", "UPDATE", "DELETE", "TRUNCATE", "INSERT"],
-        '"MODELS_DB".site',
+        '"MODELS_DB".terminal',
     )
     op.revoke_on_table(
         "test_db_read" if os.getenv("ENVIRONMENT") != "production" else "prod_db_read",
         ["SELECT"],
-        '"MODELS_DB".site',
+        '"MODELS_DB".terminal',
     )
     op.revoke_on_table(
         "test_db_all" if os.getenv("ENVIRONMENT") != "production" else "prod_db_all",
         ["ALL"],
-        '"MODELS_DB".terminal',
+        '"MODELS_DB".site',
     )
     op.revoke_on_table(
         (
@@ -214,12 +220,12 @@ def downgrade():
             else "prod_db_write"
         ),
         ["SELECT", "UPDATE", "DELETE", "TRUNCATE", "INSERT"],
-        '"MODELS_DB".terminal',
+        '"MODELS_DB".site',
     )
     op.revoke_on_table(
         "test_db_read" if os.getenv("ENVIRONMENT") != "production" else "prod_db_read",
         ["SELECT"],
-        '"MODELS_DB".terminal',
+        '"MODELS_DB".site',
     )
     op.revoke_on_schema(
         "test_db_all" if os.getenv("ENVIRONMENT") != "production" else "prod_db_all",

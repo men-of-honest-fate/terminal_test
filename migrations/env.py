@@ -3,10 +3,10 @@ from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
-from api.models.db import Site, Terminal
+
 import migrations.custom_scripts  # noqa
 from api.models.base import Base
-
+from api.models.db import Site, Terminal
 
 config = context.config
 
@@ -14,7 +14,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 target_metadata = Base.metadata
-IGNORE_TABLES = ['alembic_version']
+IGNORE_TABLES = ["alembic_version"]
 
 
 def include_object(object, name, type_, reflected, compare_to):
@@ -22,7 +22,9 @@ def include_object(object, name, type_, reflected, compare_to):
     Should you include this table or not?
     """
 
-    if type_ == 'table' and (name in IGNORE_TABLES or object.info.get("skip_autogenerate", False)):
+    if type_ == "table" and (
+        name in IGNORE_TABLES or object.info.get("skip_autogenerate", False)
+    ):
         return False
 
     elif type_ == "column" and object.info.get("skip_autogenerate", False):
@@ -36,17 +38,17 @@ def process_revision_directives(context, revision, directives):
     script = directives[0].upgrade_ops_list[0].ops
     names = [obj.__class__.__name__ for obj in script]
     pattern_list = [
-        'CreateTableSchemaOp',
-        'CreateTableOp',
-        'CreateGroupOp',
-        'GrantOnSchemaOp',
-        'GrantRightsOp',
-        'ModifyTableOps',
-        'RevokeRightsOp',
-        'RevokeOnSchemaOp',
-        'DropTableOp',
-        'DeleteGroupOp',
-        'DropTableSchemaOp',
+        "CreateTableSchemaOp",
+        "CreateTableOp",
+        "CreateGroupOp",
+        "GrantOnSchemaOp",
+        "GrantRightsOp",
+        "ModifyTableOps",
+        "RevokeRightsOp",
+        "RevokeOnSchemaOp",
+        "DropTableOp",
+        "DeleteGroupOp",
+        "DropTableSchemaOp",
     ]
     indexes = []
     for pattern in pattern_list:
@@ -77,7 +79,7 @@ def process_revision_directives(context, revision, directives):
 
 
 def run_migrations_offline():
-    url = os.getenv('DB_DSN', 'postgresql://postgres:12345@localhost:5432/postgres')
+    url = os.getenv("DB_DSN", "postgresql://postgres:12345@localhost:5432/terminals")
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -85,7 +87,7 @@ def run_migrations_offline():
         dialect_opts={"paramstyle": "named"},
         include_schemas=True,
         include_object=include_object,
-        version_table_schema='public',
+        version_table_schema="public",
         process_revision_directives=process_revision_directives,
     )
 
@@ -101,7 +103,9 @@ def run_migrations_online():
 
     """
     configuration = config.get_section(config.config_ini_section)
-    configuration["sqlalchemy.url"] = os.getenv('DB_DSN', 'postgresql://postgres:12345@localhost:5432/postgres')
+    configuration["sqlalchemy.url"] = os.getenv(
+        "DB_DSN", "postgresql://postgres:12345@localhost:5432/terminals"
+    )
     connectable = engine_from_config(
         configuration,
         prefix="sqlalchemy.",
@@ -114,7 +118,7 @@ def run_migrations_online():
             target_metadata=target_metadata,
             include_schemas=True,
             include_object=include_object,
-            version_table_schema='public',
+            version_table_schema="public",
             process_revision_directives=process_revision_directives,
         )
 

@@ -8,8 +8,8 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Application settings"""
 
-    DB_DSN: PostgresDsn = os.getenv(
-        "DB_DSN", "postgresql://postgres:12345@localhost:5432/qmonitoring"
+    DB_DSN: str = os.getenv(
+        "DB_DSN", "postgresql://postgres:12345@localhost:5432/terminals"
     )
     ROOT_PATH: str = os.getenv("APP_NAME", "")
     API_URL: str = os.getenv("API_URL", "localhost:8000")

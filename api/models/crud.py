@@ -1,7 +1,11 @@
+import hashlib
+import secrets
+
 from sqlalchemy.orm import Session
-from schemas import Create_Site, Create_Terminal, Get_Site, Get_Terminal, Update_Site, Update_Terminal, Authorize_Data
-from db import Site, Terminal, Data_Authorize
-import hashlib, secrets 
+
+from api.models.db import Site, Terminal
+from api.models.schemas import Create_Site, Create_Terminal, Authorize_Input
+
 # def create_site(db: Session, ):
 #     return db.query().filter(models.User.id == user_id).first()
 
@@ -23,9 +27,15 @@ import hashlib, secrets
 #     limit_sum: Mapped[int] = mapped_column(nullable = False)
 #     limit_req: Mapped[int] = mapped_column(nullable = False)
 
+
 def create_site(db: Session, site: Create_Site):
-    fake_hashed_password = site.password + "skibidi_dop_dop"
-    db_site = Site(url=site.url, bank_number = site.bank_number, login = site.login, password=hash(fake_hashed_password))
+    db_site = Site(
+        url=site.url,
+        bank_number=site.bank_number,
+        login=site.login,
+        password=site.password,
+        token=secrets.token_hex(),
+    )
     db.add(db_site)
     db.commit()
     db.refresh(db_site)
@@ -33,35 +43,66 @@ def create_site(db: Session, site: Create_Site):
 
 
 def create_terminal(db: Session, terminal: Create_Terminal):
-    fake_hashed_password = terminal.password + "skibidi_es_es"
-    db_terminal = Terminal(limit_sum=terminal.limit_sum, limit_req = terminal.limit_req, password=hash(fake_hashed_password))
+    db_terminal = Terminal(
+        limit_sum=terminal.limit_sum,
+        limit_req=terminal.limit_req,
+    )
     db.add(db_terminal)
     db.commit()
     db.refresh(db_terminal)
     return db_terminal
-def update_site(db: Session, site: Create_Site, ):
 
-def get_site(db: Session, skip: int = 0, limit: int = 100):
+
+def update_site(
+    db: Session,
+    site: Create_Site,
+):
+    pass
+
+
+def get_sites(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Site).offset(skip).limit(limit).all()
-#в ручке гет превратить в модели пайдантик уже в самой ручке 
-def get_terminal(db: Session, skip: int = 0, limit: int = 100):
+
+
+def get_site(db: Session, id: int):
+    return db.query(Site).filter(Site.id == id).one_or_none()
+
+
+# в ручке гет превратить в модели пайдантик уже в самой ручке
+def get_terminals(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Terminal).offset(skip).limit(limit).all()
-#в ручке гет превратить в модели пайдантик уже в самой ручке 
+
+
+def get_terminal(db: Session, id: int):
+    return db.query(Terminal).filter(Terminal.id == id).one_or_none()
+
+
+# в ручке гет превратить в модели пайдантик уже в самой ручке
 def delete_site(db: Session, get_id: int):
-    obj = db.query(Site).filter(Site.id ==get_id).one_or_none()
+    obj = db.query(Site).filter(Site.id == get_id).one_or_none()
     if obj:
         db.delete(obj)
+        db.commit()
+
+
 def delete_terminal(db: Session, get_id: int):
-    obj = db.query(Terminal).filter(Terminal.id ==get_id).one_or_none()
+    obj = db.query(Terminal).filter(Terminal.id == get_id).one_or_none()
     if obj:
         db.delete(obj)
-def authorization(db: Session, input_login: str, input_password: str, authorize: Authorize_Data):
-    user = db.query(Data_Authorize).filter(Data_Authorize.login == input_login, Data_Authorize.password ==input_password).one_or_none()
+        db.commit()
+
+
+def authorization(db: Session, authorize: Authorize_Input):
+    user = (
+        db.query(Site)
+        .filter(
+            Site.login == authorize.login,
+            Site.password == authorize.password,
+        )
+        .one_or_none()
+    )
     if user:
         new_token = secrets.token_hex()
         user.token = new_token
         db.commit()
         return new_token
-def 
-        #тогда дать возможность создавать сайты я хз тут я запуталась
-

@@ -1,6 +1,5 @@
 import time
 
-import serial
 from fastapi import APIRouter
 
 from settings import get_settings
@@ -25,13 +24,14 @@ async def read_item(sum: int):
     ###            Имплементация схемы НОТУБУК + ARDUINO               ###
     ###           Необходимо прописать команду на ноутбуке:            ###
     ###               fastapi dev .\backend\__main__.py                ###
-    com_port = get_settings().COM
+    return "Depriciated"
+    # com_port = get_settings().COM
 
-    arduino = serial.Serial(port=com_port, baudrate=115200, timeout=0.1)
-    arduino.write(bytes(str(sum), "utf-8"))
-    time.sleep(1)
-    data = arduino.readlines()
-    for line in data:
-        print(line)
+    # arduino = serial.Serial(port=com_port, baudrate=115200, timeout=0.1)
+    # arduino.write(bytes(str(sum), "utf-8"))
+    # time.sleep(1)
+    # data = arduino.readlines()
+    # for line in data:
+    #     print(line)
 
-    return data
+    # return data

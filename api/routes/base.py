@@ -1,15 +1,18 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_sqlalchemy import DBSessionMiddleware
-from fastapi import Depends, FastAPI, HTTPException
-from sqlalchemy.orm import Session, sessionmaker
-import models
 from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
+
 from api import __version__
+from api.models import base
 from settings import get_settings
 
 from .root import root
+from .sites import sites
 from .websockets import ws
+from .terminals import terminals
+from .auth import auth
 
 settings = get_settings()
 app = FastAPI(
@@ -39,16 +42,6 @@ app.add_middleware(
 
 app.include_router(root, prefix="", tags=["root"])
 app.include_router(ws, prefix="/ws", tags=["Websockets"])
-SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
-
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-models.Base.metadata.create_all(bind=engine)
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+app.include_router(sites, prefix="/sites", tags=["Sites"])
+app.include_router(terminals, prefix="/terminals", tags=["Terminals"])
+app.include_router(auth, prefix="/auth", tags=["Auth"])
