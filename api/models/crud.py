@@ -4,7 +4,7 @@ import secrets
 from sqlalchemy.orm import Session
 
 from api.models.db import Site, Terminal
-from api.models.schemas import Create_Site, Create_Terminal, Authorize_Input
+from api.models.schemas import Create_Site, Create_Terminal, Update_Site, Authorize_Input, Update_Terminal
 
 # def create_site(db: Session, ):
 #     return db.query().filter(models.User.id == user_id).first()
@@ -55,9 +55,16 @@ def create_terminal(db: Session, terminal: Create_Terminal):
 
 def update_site(
     db: Session,
-    site: Create_Site,
+    site: Update_Site,
+    id: int,
 ):
-    pass
+    old_site = db.query(Site).filter(Site.id == id).one_or_none()
+    if old_site:
+        for args in list(site.model_json_schema()["properties"].keys()):
+            setattr(old_site, args, getattr(site, args))
+        db.commit()
+        db.refresh(old_site)
+        return old_site
 
 
 def get_sites(db: Session, skip: int = 0, limit: int = 100):
@@ -91,8 +98,21 @@ def delete_terminal(db: Session, get_id: int):
         db.delete(obj)
         db.commit()
 
+def update_terminal(
+    db: Session,
+    terminal: Update_Terminal,
+    id: int,
+):
+    old_terminal = db.query(Terminal).filter(Terminal.id == id).one_or_none()
+    if old_terminal:
+        for args in list(terminal.model_json_schema()["properties"].keys()):
+            setattr(old_terminal, args, getattr(terminal, args))
+        db.commit()
+        db.refresh(old_terminal)
+        return old_terminal
 
-def authorization(db: Session, authorize: Authorize_Input):
+def authorization(db: Session, authorize: dict):
+    authorize = Authorize_Input(**authorize)
     user = (
         db.query(Site)
         .filter(
@@ -106,3 +126,14 @@ def authorization(db: Session, authorize: Authorize_Input):
         user.token = new_token
         db.commit()
         return new_token
+
+def check_authorization(db: Session, token: str):
+    user = (
+       db.query(Site)
+       .filter(
+           Site.token == token,
+       )
+       .one_or_none()
+    )
+    if user:
+        return user

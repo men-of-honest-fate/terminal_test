@@ -1,8 +1,9 @@
 import re
 
 from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.orm import as_declarative
-
+from sqlalchemy.orm import as_declarative, sessionmaker
+from sqlalchemy import create_engine
+from settings import get_settings
 from migrations.custom_scripts.schemas import add_table_schema_to_model
 
 
@@ -31,3 +32,14 @@ class Base:
         for c in self.__table__.columns:
             attrs.append(f"{c.name}={getattr(self, c.name)}")
         return "{}({})".format(self.__class__.__name__, ", ".join(attrs))
+
+
+def get_db():
+    settings = get_settings()
+    engine = create_engine(settings.DB_DSN)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

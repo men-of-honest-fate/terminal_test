@@ -35,19 +35,13 @@ class Get_Terminal(BaseModel):
 
 
 class Update_Terminal(BaseModel):
-    limit_sum: int
-    limit_req: int
+    limit_sum: int | None = Field(default=None)
+    limit_req: int | None = Field(default=None)
 
 
 class Authorize_Input(BaseModel):
+    login: str
     password: str
-    login: str
-
-
-class Authorize_Response(BaseModel):
-    login: str
-    token: str
-
 
 # _tablename__ = "site"
 #     id: Mapped[int] = mapped_column(primary_key = True)
