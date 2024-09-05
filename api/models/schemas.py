@@ -1,6 +1,5 @@
-import pydantic
 from pydantic import BaseModel, Field
-
+from typing import Optional
 
 class Create_Site(BaseModel):
     url: str
@@ -29,9 +28,9 @@ class Create_Terminal(BaseModel):
 
 
 class Get_Terminal(BaseModel):
-    id: int
-    limit_sum: int
-    limit_req: int
+    id: Optional[int] =  None
+    limit_sum: Optional[int] =  None
+    limit_req: Optional[int] =  None
 
 
 class Update_Terminal(BaseModel):

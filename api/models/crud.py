@@ -80,8 +80,12 @@ def get_terminals(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Terminal).offset(skip).limit(limit).all()
 
 
-def get_terminal(db: Session, id: int):
-    return db.query(Terminal).filter(Terminal.id == id).one_or_none()
+def get_terminal(db: Session, params):
+    obj = db.query(Terminal)
+    print(params)
+    # for attr, value in params.items():
+    #     obj = obj.filter(getattr(Terminal, attr).ilike(f"%{value}%"))
+    return obj.all()
 
 
 # в ручке гет превратить в модели пайдантик уже в самой ручке

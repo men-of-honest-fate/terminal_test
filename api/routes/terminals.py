@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from .auth import oauth2_scheme
@@ -26,8 +26,8 @@ def get_terminals(token: Annotated[str, Depends(oauth2_scheme)], skip: int = 0, 
 
 
 @terminals.get("/get_terminal/", response_model=Get_Terminal)
-def get_terminal(token: Annotated[str, Depends(oauth2_scheme)], id: int, db: Session = Depends(base.get_db)):
-    terminal = crud.get_terminal(db=db, id=id)
+def get_terminal(token: Annotated[str, Depends(oauth2_scheme)], params: Request, db: Session = Depends(base.get_db)):
+    terminal = crud.get_terminal(db=db, params=params)
     if not terminal:
         raise HTTPException(status_code=404, detail="Terminal not found")
     return Get_Terminal.model_validate(terminal.__dict__).model_dump()
@@ -42,3 +42,7 @@ def delete_terminal(token: Annotated[str, Depends(oauth2_scheme)], get_id: int, 
 def update_site(token: Annotated[str, Depends(oauth2_scheme)], id: int, terminal: Update_Terminal, db: Session = Depends(base.get_db)):
     db_site = crud.update_terminal(db, id=id, terminal=terminal)
     return Get_Terminal.model_validate(db_site.__dict__).model_dump()
+
+# @terminals.post("/payment/", response_model=None)
+# def payment(token: Annotated[str, Depends(oauth2_scheme)], terminal: Update_Terminal, db: Session = Depends(base.get_db))::
+    
