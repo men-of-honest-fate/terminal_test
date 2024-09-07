@@ -22,6 +22,7 @@ import hashlib, secrets
 #   id: Mapped[int] = mapped_column(primary_key = True)
 #     limit_sum: Mapped[int] = mapped_column(nullable = False)
 #     limit_req: Mapped[int] = mapped_column(nullable = False)
+#     сначала нейронке в общем, потом по слайдам нейронку спрашивать, что в конкретном слайде, гигачейн
 
 def create_site(db: Session, site: Create_Site):
     fake_hashed_password = site.password + "skibidi_dop_dop"
@@ -62,6 +63,6 @@ def authorization(db: Session, input_login: str, input_password: str, authorize:
         user.token = new_token
         db.commit()
         return new_token
-def 
+
         #тогда дать возможность создавать сайты я хз тут я запуталась
 
