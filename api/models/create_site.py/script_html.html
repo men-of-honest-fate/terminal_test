@@ -1,16 +1,8 @@
 import jinja2
 from jinja2 import Template
-html = open('foopkg/templates/0.hello.html').read()
+html = open('base.html').read()
 template = Template(html)
-print(template.render(name=u'Петя'))
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>QR Код для оплаты</title>
-</head>
-<body>
-    <h1>QR Код для оплаты</h1>
-    <img src="{qr_code}" alt="QR Code for Payment">
-</body>
-</html>
+my_file = open("BabyFile.txt", "w+")
+my_file.write((template.render(qr_code=u'qrcode.img'))) #откуда идет qr???
+
+
