@@ -3,7 +3,8 @@ import secrets
 from jinja2 import Template
 html = open('base.html').read()
 template = Template(html)
-my_file = open("BabyFile.txt", "w+")
+adress = secrets.token_hex(9)
+my_file = open(f'{adress}.html', "w+")
 my_file.write((template.render(qr_code=u'qrcode.img'))) #откуда идет qr???
 
 
